@@ -1,0 +1,56 @@
+# GitHub Pages へ公開する。
+#
+# このリポジトリを使う人はエンジニアではない前提。
+# したがって「何もしなくても公開される」ことを最優先にしている。
+# ファイルを編集して保存（コミット）すれば、1〜2分で公開URLに反映される。
+#
+# ビルドは行わない。index.html をそのまま配る。
+# ビルドを挟むと、失敗したときに原因が分からず手が止まる。
+
+name: pages
+
+on:
+  push:
+    branches: [main]
+  # 手動でも実行できるようにしておく（うまく出ないときの再実行用）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時に走らせない。連続で保存したとき、古い方が後から上書きするのを防ぐ。
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # 提出前に気づけるよう、最低限だけ確かめる。
+      # 「公開されたが中身が空」を防ぐのが目的で、書き方の指導はしない。
+      - name: 最低限の確認
+        run: |
+          test -f index.html || { echo "::error::index.html がありません"; exit 1; }
+          if grep -q "あなたの名前" index.html; then
+            echo "::warning::index.html がテンプレートのままです（「あなたの名前」が残っています）"
+          fi
+          n=$(ls images/*.png images/*.jpg images/*.jpeg images/*.webp 2>/dev/null | wc -l)
+          echo "作品画像: ${n} 枚"
+          if [ "$n" -eq 0 ]; then
+            echo "::warning::images/ に画像がありません。作品を入れてください"
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

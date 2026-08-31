@@ -1,0 +1,40 @@
+/* 触らなくても見た目が整うようにしてあります。
+   色を変えたいときは、下の3行だけ書き換えれば全体が変わります。 */
+:root {
+  --accent: #0b7285;   /* 見出しやリンクの色 */
+  --bg: #ffffff;       /* 背景 */
+  --text: #1a1a2e;     /* 文字 */
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+  line-height: 1.8;
+}
+.hero { max-width: 820px; margin: 0 auto; padding: 4rem 1.4rem 2rem; }
+.course { color: var(--accent); font-weight: 700; letter-spacing: .08em; font-size: .82rem; margin: 0 0 .4rem; }
+.hero h1 { font-size: 2.4rem; margin: 0 0 .8rem; letter-spacing: -.02em; }
+.bio { font-size: 1.02rem; color: #444; margin: 0; }
+main { max-width: 820px; margin: 0 auto; padding: 1rem 1.4rem 4rem; }
+h2 { font-size: 1.2rem; border-bottom: 2px solid var(--accent); padding-bottom: .4rem; margin: 2.5rem 0 1.2rem; }
+.works { display: grid; gap: 2.5rem; }
+.work { margin: 0; }
+.work img {
+  width: 100%; height: auto; border-radius: 10px; border: 1px solid #e3e6ea; display: block;
+  background: #f4f5f7;
+}
+.work h3 { font-size: 1.05rem; margin: .9rem 0 .2rem; }
+.meta { color: var(--accent); font-size: .78rem; font-weight: 700; margin: 0 0 .5rem; }
+.work p { margin: 0 0 .6rem; }
+details { font-size: .86rem; }
+summary { cursor: pointer; color: var(--accent); }
+pre {
+  white-space: pre-wrap; word-break: break-word; background: #f6f7f9;
+  padding: .8rem; border-radius: 8px; font-size: .82rem; margin: .5rem 0 0;
+}
+footer { border-top: 1px solid #e3e6ea; padding: 2rem 1.4rem; text-align: center; font-size: .8rem; color: #666; }
+.note { color: #888; font-size: .74rem; }
+
+/* スマホ */
+@media (max-width: 640px) { .hero h1 { font-size: 1.8rem; } }

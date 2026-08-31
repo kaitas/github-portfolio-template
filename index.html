@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>わたしのポートフォリオ</title>
+<meta name="description" content="作品ポートフォリオ">
+<!-- SNSでシェアされたときの見え方。画像はあとで差し替えてください -->
+<meta property="og:title" content="わたしのポートフォリオ">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <!-- ▼ ここから書き換えます -->
+  <p class="course">Portfolio</p>
+  <h1>あなたの名前</h1>
+  <p class="bio">
+    ひとことで自己紹介を書きます。何をつくる人か、何に興味があるかを2〜3行で。
+  </p>
+  <!-- ▲ ここまで -->
+</header>
+
+<main>
+  <section>
+    <h2>作品</h2>
+    <div class="works">
+
+      <!--
+        作品を1つ増やすときは、この <figure> ... </figure> を
+        まるごとコピーして貼り付け、中身を書き換えてください。
+        画像は images/ フォルダに入れます。
+      -->
+      <figure class="work">
+        <img src="images/work-01.png" alt="作品1の説明">
+        <figcaption>
+          <h3>作品のタイトル</h3>
+          <p class="meta">2026</p>
+          <p>この作品で何を表現したかったか、どう作ったかを書きます。</p>
+          <details>
+            <summary>使ったプロンプト</summary>
+            <pre>ここにプロンプトを貼ります</pre>
+          </details>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Your Name</p>
+  <p class="note">
+    このページの画像は生成AIを用いて制作しています。
+    使用したツールとプロンプトは各作品に記載しています。
+  </p>
+</footer>
+
+</body>
+</html>
