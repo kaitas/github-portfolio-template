@@ -34,7 +34,10 @@
         画像は images/ フォルダに入れます。
       -->
       <figure class="work">
-        <img src="images/work-01.png" alt="作品1の説明">
+        <!-- 画像が無い間は、枠だけのプレースホルダが出ます（onerror）。
+             images/ に画像を置いて src を差し替えたら、この属性は消してOK -->
+        <img src="images/work-01.png" alt="作品1の説明"
+          onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 800 450&quot;><rect width=&quot;800&quot; height=&quot;450&quot; fill=&quot;%23f0f0f2&quot;/><rect x=&quot;8&quot; y=&quot;8&quot; width=&quot;784&quot; height=&quot;434&quot; fill=&quot;none&quot; stroke=&quot;%23c8c8d0&quot; stroke-width=&quot;3&quot; stroke-dasharray=&quot;12 8&quot;/><text x=&quot;400&quot; y=&quot;215&quot; text-anchor=&quot;middle&quot; font-family=&quot;sans-serif&quot; font-size=&quot;28&quot; fill=&quot;%23707078&quot;>images/ に作品画像を入れると</text><text x=&quot;400&quot; y=&quot;255&quot; text-anchor=&quot;middle&quot; font-family=&quot;sans-serif&quot; font-size=&quot;28&quot; fill=&quot;%23707078&quot;>ここに表示されます</text></svg>')">
         <figcaption>
           <h3>作品のタイトル</h3>
           <p class="meta">2026</p>
