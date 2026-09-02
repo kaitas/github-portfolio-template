@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "aicu": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "AICU API",
+      "options": {
+        "baseURL": "https://api.aicu.ai/v1",
+        "apiKey": "{env:AICU_API_KEY}"
+      },
+      "models": {
+        "kimi-k2.7-code": { "name": "Kimi-K2.7-Code (SAKURA)" }
+      }
+    }
+  }
+}
