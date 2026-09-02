@@ -120,3 +120,20 @@ index.html の作品を1つ増やしてください。
 MIT License. 自由に使ってください。クレジットも不要です。
 
 改変して自分のテンプレートにするのも歓迎です。
+
+---
+
+## AIと一緒に編集したい人へ（オプション）
+
+このテンプレートには [OpenCode](https://opencode.ai/ja) の設定ファイル `opencode.json` が入っています。
+リポジトリを手元に clone して、[api.aicu.ai のダッシュボード](https://api.aicu.ai/dashboard/keys)で発行した
+API キーを環境変数に入れるだけで、AIコーディングエージェントに編集を頼めます。
+
+```bash
+export AICU_API_KEY=aicu_live_xxx   # 自分のキーに置き換え
+opencode                            # 起動して /models → aicu/kimi-k2.7-code
+```
+
+キーは環境変数から読む設計なので、**このファイルに書き込む必要はありません**
+（書かないでください。公開リポジトリに載ります）。
+使い方の詳細: [api.aicu.ai/docs/ja](https://api.aicu.ai/docs/ja/)
