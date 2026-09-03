@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rsl xmlns="https://rslstandard.org/rsl">
+  <content url="/">
+    <license>
+      <!-- 例: AIの学習（ai-train）を無料で許可する場合 -->
+      <permits type="usage">ai-train</permits>
+      <payment type="free"/>
+      <!-- 自分の3項目（usage / user / payment）に合わせて書き換えてください。例:
+           検索と要約だけ許可   → <permits type="usage">search ai-summarize</permits>
+           クレジット表記が対価 → <payment type="attribution"/>
+           仕様: https://rslstandard.org/ -->
+    </license>
+  </content>
+</rsl>
