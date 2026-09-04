@@ -122,6 +122,21 @@
       <legend>6. 確認して保存</legend>
       <p class="hint">設定JSONは編集の再開用です。完成HTMLはGitHubのindex.htmlと置き換えると公開できます。</p>
       <label><input name="ai" type="checkbox" checked> 作品に生成AIを使用したことを表示する</label>
+      <label>AIによるコンテンツ利用（RSL）
+        <select name="rsl">
+          <option value="ai-train-free">AI学習を無料で許可する（現在の設定）</option>
+          <option value="none">AIによる利用を許可しない</option>
+        </select>
+      </label>
+      <p class="hint">
+        RSLは、AIが作品をどのように利用できるかを機械向けに示す設定です。
+        現在は「AI学習を無料で許可する」です。設定ファイルはリポジトリ直下の
+        <a href="rsl.xml" target="_blank" rel="noopener noreferrer">rsl.xml</a> にあります。
+      </p>
+      <p class="warning" id="rsl-warning" hidden>
+        「許可しない」を選んだ場合、完成HTMLにはRSL宣言を入れません。
+        公開時はGitHub上のrsl.xmlとrobots.txtも削除してください。
+      </p>
       <div id="pii-warning" class="warning" hidden></div>
       <div class="output">
         <button type="button" class="accent" id="download-html">完成した index.html を保存</button>

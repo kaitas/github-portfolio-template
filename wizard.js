@@ -50,7 +50,11 @@
         ["GitHub", data.get("github")], ["YouTube", data.get("youtube")], ["作品サイト・SNS", data.get("social")]
       ].map(([label, url]) => ({ label, url: safeUrl(url) })).filter(link => link.url),
       theme: { preset: String(data.get("theme") || "gallery"), accent: String(data.get("accent") || "#0b7285") },
-      disclosure: { usesGenerativeAI: data.get("ai") === "on" }
+      disclosure: { usesGenerativeAI: data.get("ai") === "on" },
+      rsl: {
+        policy: String(data.get("rsl") || "ai-train-free"),
+        file: "rsl.xml"
+      }
     };
   };
 
@@ -77,11 +81,13 @@
     }).join("") || '<p class="empty">最初の作品を追加しましょう。</p>';
     const links = data.links.map(link => `<a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`).join("");
     const ai = data.disclosure.usesGenerativeAI ? "このポートフォリオには生成AIを用いた作品が含まれます。" : "";
+    const usesRsl = data.rsl?.policy !== "none";
+    const rsl = usesRsl ? "このサイトはRSLにより、コンテンツのAI学習への無料利用を許可しています。" : "";
     const title = data.profile.name || "わたしのポートフォリオ";
     return `<!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} | Portfolio</title><meta name="description" content="${escapeHtml(data.profile.bio || "作品ポートフォリオ")}"><style>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} | Portfolio</title><meta name="description" content="${escapeHtml(data.profile.bio || "作品ポートフォリオ")}">${usesRsl ? '<link rel="rsl" type="application/rsl+xml" href="rsl.xml">' : ""}<style>
 :root{--accent:${escapeHtml(data.theme.accent)};--bg:${theme.bg};--text:${theme.text};--panel:${theme.panel}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:${theme.font};line-height:1.75}a{color:inherit}.hero,main{max-width:980px;margin:auto;padding-left:1.3rem;padding-right:1.3rem}.hero{padding-top:7rem;padding-bottom:4rem;border-bottom:1px solid color-mix(in srgb,var(--text) 18%,transparent)}.eyebrow,.meta{color:var(--accent);font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(2.8rem,9vw,7rem);line-height:.95;letter-spacing:-.05em;margin:.4rem 0 1.4rem}.role{font-weight:700}.bio{max-width:65ch;font-size:1.08rem}.links{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.5rem}.links a{border-bottom:2px solid var(--accent);text-decoration:none}main{padding-top:3rem;padding-bottom:6rem}h2{font-size:1rem;letter-spacing:.1em}.works{display:grid;gap:2rem}.work{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);background:var(--panel)}.work img,.placeholder{width:100%;height:100%;min-height:340px;object-fit:cover}.placeholder{display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel));letter-spacing:.2em}.copy{padding:clamp(1.2rem,4vw,2.4rem)}.copy h3{font-size:1.6rem;line-height:1.25;margin:.25rem 0}.tools{font-size:.82rem;opacity:.75}.empty{padding:3rem;background:var(--panel)}footer{padding:2rem 1.3rem;text-align:center;border-top:1px solid color-mix(in srgb,var(--text) 18%,transparent);font-size:.78rem;opacity:.75}@media(max-width:700px){.hero{padding-top:4rem}.work{grid-template-columns:1fr}.work img,.placeholder{min-height:230px;max-height:430px}}
-</style></head><body><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main><h2>SELECTED WORKS</h2><section class="works">${works}</section></main><footer><p>${escapeHtml(title)}</p>${ai ? `<p>${ai}</p>` : ""}</footer></body></html>`;
+</style></head><body><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main><h2>SELECTED WORKS</h2><section class="works">${works}</section></main><footer><p>${escapeHtml(title)}</p>${ai ? `<p>${ai}</p>` : ""}${rsl ? `<p>${rsl} <a href="rsl.xml">条件を確認</a></p>` : ""}</footer></body></html>`;
   };
 
   const render = () => {
@@ -144,6 +150,7 @@
     fields.theme.value = config.theme?.preset || "gallery";
     fields.accent.value = config.theme?.accent || "#0b7285";
     fields.ai.checked = Boolean(config.disclosure?.usesGenerativeAI);
+    fields.rsl.value = config.rsl?.policy || "ai-train-free";
     worksRoot.replaceChildren();
     config.works.forEach(addWork);
     if (!config.works.length) addWork();
@@ -164,7 +171,10 @@
     try { load(JSON.parse(await event.target.files[0].text())); } catch (error) { alert(error.message); }
     event.target.value = "";
   });
-  form.addEventListener("input", render);
+  form.addEventListener("input", () => {
+    document.querySelector("#rsl-warning").hidden = form.elements.rsl.value !== "none";
+    render();
+  });
   addWork({ year: String(new Date().getFullYear()), image: "images/HakaseOG.png" });
   showStep(0);
 })();

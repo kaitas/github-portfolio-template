@@ -95,7 +95,7 @@ https://<Owner名>.github.io/<リポジトリ名>/wizard.html
 3. 作品のタイトル、画像、説明
 4. GitHub、YouTubeなどの公開用リンク
 5. スタイルと色
-6. 公開前の確認
+6. 生成AI利用の表示、RSL、公開前の確認
 
 画像は`images/work-01.png`のような名前で指定します。画像そのものは後からGitHubへ入れます。
 
@@ -105,6 +105,18 @@ https://<Owner名>.github.io/<リポジトリ名>/wizard.html
 - **編集用 portfolio.json を保存**: 後日ウィザードへ読み込み、続きを編集するための控えです
 
 `portfolio.json`だけではWebサイトになりません。公開には`index.html`を使います。
+
+### RSLについて
+
+RSLは、サイトの内容をAIがどのように利用できるかを機械向けに示す設定です。
+このテンプレートの現在の設定は**AI学習を無料で許可する**です。
+
+- 設定ファイル: [`rsl.xml`](rsl.xml)
+- AI向けのファイル案内: [`robots.txt`](robots.txt)
+- ウィザードで作るHTMLには`rsl.xml`への案内と、画面上の説明が入ります
+
+ウィザードで「AIによる利用を許可しない」を選ぶと、生成するHTMLからRSL宣言を外します。
+その場合は公開リポジトリの`rsl.xml`と`robots.txt`も削除し、許可する宣言を残さないでください。
 
 ### 4. 完成したindex.htmlをGitHubへ入れる
 
