@@ -37,7 +37,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref || github.ref }}
 
@@ -61,9 +61,11 @@ jobs:
       # 提出前に気づけるよう、最低限だけ確かめる。
       # 「公開されたが中身が空」を防ぐのが目的で、書き方の指導はしない。
       - name: 最低限の確認
+        env:
+          IS_TEMPLATE: ${{ github.event.repository.is_template }}
         run: |
           test -f index.html || { echo "::error::index.html がありません"; exit 1; }
-          if grep -q "あなたの名前" index.html; then
+          if [ "$IS_TEMPLATE" != "true" ] && grep -q "あなたの名前" index.html; then
             echo "::warning::index.html がテンプレートのままです（「あなたの名前」が残っています）"
           fi
           n=$(find images -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' -o -iname '*.gif' \) | wc -l)
@@ -82,9 +84,9 @@ jobs:
             echo "画像の参照に警告があります（公開は続行します）"
           fi
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: .
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
