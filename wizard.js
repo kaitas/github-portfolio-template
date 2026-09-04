@@ -31,6 +31,17 @@
 
   const checked = group => [...document.querySelectorAll(`[data-group="${group}"] input:checked`)].map(input => input.value);
 
+  const youtubeId = value => {
+    try {
+      const url = new URL(String(value || "").trim());
+      if (!["www.youtube.com", "youtube.com", "music.youtube.com", "youtu.be"].includes(url.hostname)) return "";
+      const id = url.hostname === "youtu.be" ? url.pathname.slice(1) : url.searchParams.get("v") || url.pathname.match(/^\/embed\/([^/]+)/)?.[1];
+      return /^[a-zA-Z0-9_-]{11}$/.test(id || "") ? id : "";
+    } catch {
+      return "";
+    }
+  };
+
   const collect = () => {
     const data = new FormData(form);
     return {
@@ -50,6 +61,7 @@
         ["GitHub", data.get("github")], ["YouTube", data.get("youtube")], ["Music", data.get("music")], ["作品サイト・SNS", data.get("social")]
       ].map(([label, url]) => ({ label, url: safeUrl(url) })).filter(link => link.url),
       theme: { preset: String(data.get("theme") || "gallery"), accent: String(data.get("accent") || "#0b7285") },
+      bgm: { youtubeUrl: youtubeId(data.get("bgm")) ? String(data.get("bgm")).trim() : "" },
       disclosure: { usesGenerativeAI: data.get("ai") === "on" },
       rsl: {
         policy: String(data.get("rsl") || "ai-train-free"),
@@ -85,6 +97,8 @@
     const rsl = usesRsl ? "このサイトはRSLにより、コンテンツのAI学習への無料利用を許可しています。" : "";
     const title = data.profile.name || "わたしのポートフォリオ";
     const backgroundImage = safeUrl(data.works[0]?.image);
+    const bgmId = youtubeId(data.bgm?.youtubeUrl);
+    const bgm = bgmId ? `<div class="bgm"><button type="button" class="bgm-toggle" aria-expanded="false" aria-controls="bgm-panel">BGM</button><section class="bgm-panel" id="bgm-panel" aria-label="BGMプレイヤー" hidden><div class="bgm-head"><strong>BGM</strong><button type="button" class="bgm-close" aria-label="BGMを閉じる">&times;</button></div><div class="bgm-frame"></div><a href="https://music.youtube.com/watch?v=${bgmId}" target="_blank" rel="noopener noreferrer">YouTube Musicで聴く</a></section></div>` : "";
     return `<!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} | Portfolio</title><meta name="description" content="${escapeHtml(data.profile.bio || "作品ポートフォリオ")}"><meta name="generator" content="https://github.com/kaitas/github-portfolio-template"><meta name="author" content="https://aicu.ai/">${usesRsl ? '<link rel="rsl" type="application/rsl+xml" href="rsl.xml">' : ""}<style>
 :root{--accent:${escapeHtml(data.theme.accent)};--bg:${theme.bg};--text:${theme.text};--panel:${theme.panel};--muted:${theme.muted};--label:${theme.label}}
@@ -107,11 +121,13 @@ h2{margin:0 0 1rem;font-size:1rem;letter-spacing:.1em}.works{display:grid;gap:2r
 .placeholder{display:grid;place-items:center;color:var(--label);background:color-mix(in srgb,var(--accent) 12%,var(--panel));letter-spacing:.2em}
 .copy{align-self:center;padding:clamp(1.25rem,3vw,2rem)}.copy h3{margin:.25rem 0;font-size:clamp(1.4rem,2.2vw,1.8rem);line-height:1.2}.copy p{margin:.75rem 0}.tools{color:var(--muted);font-size:.9rem}.empty{padding:3rem;background:var(--panel)}
 footer{padding:1.25rem;line-height:1.5;text-align:center;border-top:1px solid color-mix(in srgb,var(--text) 22%,transparent);color:var(--muted);font-size:.8125rem}footer p{margin:.35rem}footer a{text-decoration-thickness:2px;text-underline-offset:3px}
+.bgm{position:fixed;z-index:20;right:clamp(1rem,3vw,2rem);bottom:clamp(1rem,3vw,2rem)}.bgm button{min-width:48px;min-height:48px;border:1px solid color-mix(in srgb,var(--text) 35%,transparent);border-radius:999px;color:var(--text);background:color-mix(in srgb,var(--panel) 92%,transparent);font:inherit;font-weight:800;cursor:pointer;box-shadow:0 8px 30px #0008;backdrop-filter:blur(12px)}.bgm-panel{position:absolute;right:0;bottom:3.5rem;width:min(340px,calc(100vw - 2rem));padding:.8rem;border:1px solid color-mix(in srgb,var(--text) 25%,transparent);border-radius:14px;background:color-mix(in srgb,var(--panel) 96%,transparent);box-shadow:0 12px 45px #000a}.bgm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}.bgm-close{min-width:44px!important;min-height:44px!important;font-size:1.5rem}.bgm-frame{overflow:hidden;aspect-ratio:16/9;border-radius:8px;background:#000}.bgm-frame iframe{width:100%;height:100%;border:0}.bgm-panel>a{display:inline-flex;align-items:center;min-height:44px;margin-top:.35rem;font-size:.85rem;text-underline-offset:3px}
 @media(min-width:1100px) and (min-height:800px){.hero{padding-top:2rem;padding-bottom:1.25rem}main{padding-top:1.25rem;padding-bottom:1.25rem}.work img,.placeholder{max-height:390px}footer{padding:.65rem}}
-@media(max-width:700px){.hero{padding-top:2rem;padding-bottom:1.5rem}.hero h1{font-size:clamp(2.35rem,12vw,3.75rem)}.work{grid-template-columns:1fr}.work img,.placeholder{max-height:none;aspect-ratio:4/3}.copy{padding:1.25rem}.links{gap:.25rem .7rem}footer{text-align:left}}
+@media(max-width:700px){.hero{padding-top:2rem;padding-bottom:1.5rem}.hero h1{font-size:clamp(2.35rem,12vw,3.75rem)}.work{grid-template-columns:1fr}.work img,.placeholder{max-height:none;aspect-ratio:4/3}.copy{padding:1.25rem}.links{gap:.25rem .7rem}footer{text-align:left}.bgm{right:1rem;bottom:1rem}.bgm-panel{position:fixed;right:1rem;bottom:4.75rem;left:1rem;width:auto}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body{opacity:1;animation:none}#particles{display:none}}
-</style></head><body><canvas id="particles" aria-hidden="true"></canvas><a class="skip" href="#works">作品へ移動</a><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main id="works"><h2>SELECTED WORKS</h2><section class="works" aria-label="作品一覧">${works}</section></main><footer>${ai ? `<p>${ai}</p>` : ""}${rsl ? `<p>${rsl} <a href="rsl.xml">条件を確認</a></p>` : ""}</footer><script>
+</style></head><body><canvas id="particles" aria-hidden="true"></canvas><a class="skip" href="#works">作品へ移動</a><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main id="works"><h2>SELECTED WORKS</h2><section class="works" aria-label="作品一覧">${works}</section></main><footer>${ai ? `<p>${ai}</p>` : ""}${rsl ? `<p>${rsl} <a href="rsl.xml">条件を確認</a></p>` : ""}</footer>${bgm}<script>
 if(!matchMedia("(prefers-reduced-motion: reduce)").matches){const c=document.querySelector("#particles"),x=c.getContext("2d"),d=Math.min(devicePixelRatio,2),n=innerWidth<700?350:1000,p=Array.from({length:n},()=>{const a=Math.random()*Math.PI*2,s=.15+Math.random()*.85;return{a,r:Math.random()*24,s,z:.3+Math.random()*1.4}});function size(){c.width=innerWidth*d;c.height=innerHeight*d;x.setTransform(d,0,0,d,0,0)}function draw(){x.clearRect(0,0,innerWidth,innerHeight);x.fillStyle="${theme.label}66";for(const q of p){q.r+=q.s;if(q.r>Math.hypot(innerWidth,innerHeight)*.56)q.r=0;const px=innerWidth/2+Math.cos(q.a)*q.r,py=innerHeight/2+Math.sin(q.a)*q.r;x.fillRect(px,py,q.z,q.z)}requestAnimationFrame(draw)}addEventListener("resize",size,{passive:true});size();draw()}
+${bgmId ? `const t=document.querySelector(".bgm-toggle"),panel=document.querySelector(".bgm-panel"),frame=document.querySelector(".bgm-frame");function closeBgm(){panel.hidden=true;frame.replaceChildren();t.setAttribute("aria-expanded","false");t.focus()}t.addEventListener("click",()=>{panel.hidden=false;t.setAttribute("aria-expanded","true");const iframe=document.createElement("iframe");iframe.src="https://www.youtube-nocookie.com/embed/${bgmId}";iframe.title="BGM: YouTubeプレイヤー";iframe.allow="encrypted-media; picture-in-picture";iframe.allowFullscreen=true;iframe.referrerPolicy="strict-origin-when-cross-origin";frame.append(iframe);panel.querySelector(".bgm-close").focus()});panel.querySelector(".bgm-close").addEventListener("click",closeBgm);addEventListener("keydown",event=>{if(event.key==="Escape"&&!panel.hidden)closeBgm()});` : ""}
 </script></body></html>`;
   };
 
@@ -173,6 +189,7 @@ if(!matchMedia("(prefers-reduced-motion: reduce)").matches){const c=document.que
     fields.youtube.value = config.links?.find(link => link.label === "YouTube")?.url || "";
     fields.music.value = config.links?.find(link => link.label === "Music")?.url || "";
     fields.social.value = config.links?.find(link => link.label === "作品サイト・SNS")?.url || "";
+    fields.bgm.value = config.bgm?.youtubeUrl || "";
     fields.theme.value = config.theme?.preset || "gallery";
     fields.accent.value = config.theme?.accent || "#0b7285";
     fields.ai.checked = Boolean(config.disclosure?.usesGenerativeAI);
