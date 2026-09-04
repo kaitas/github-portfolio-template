@@ -34,6 +34,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: リポジトリ情報を確認
+        env:
+          OWNER: ${{ github.repository_owner }}
+          OWNER_TYPE: ${{ github.event.repository.owner.type }}
+          REPOSITORY: ${{ github.event.repository.name }}
+        run: |
+          if [ "$OWNER_TYPE" = "Organization" ]; then
+            location="Organization ${OWNER}"
+          else
+            location="個人アカウント ${OWNER}"
+          fi
+          {
+            echo "## 公開先"
+            echo "- 所有者: ${location}"
+            echo "- 公開URL: https://${OWNER}.github.io/${REPOSITORY}/"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # 提出前に気づけるよう、最低限だけ確かめる。
       # 「公開されたが中身が空」を防ぐのが目的で、書き方の指導はしない。
       - name: 最低限の確認
@@ -42,10 +59,20 @@ jobs:
           if grep -q "あなたの名前" index.html; then
             echo "::warning::index.html がテンプレートのままです（「あなたの名前」が残っています）"
           fi
-          n=$(ls images/*.png images/*.jpg images/*.jpeg images/*.webp 2>/dev/null | wc -l)
+          n=$(find images -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' -o -iname '*.gif' \) | wc -l)
           echo "作品画像: ${n} 枚"
           if [ "$n" -eq 0 ]; then
             echo "::warning::images/ に画像がありません。作品を入れてください"
+          fi
+          missing=0
+          while IFS= read -r image; do
+            if [ ! -f "$image" ]; then
+              echo "::warning file=index.html::画像 $image が見つかりません。ファイル名と大文字・小文字を確認してください"
+              missing=1
+            fi
+          done < <(grep -oE '(src|content)="images/[^"]+"' index.html | cut -d'"' -f2 | sort -u)
+          if [ "$missing" -eq 1 ]; then
+            echo "画像の参照に警告があります（公開は続行します）"
           fi
 
       - uses: actions/configure-pages@v5
