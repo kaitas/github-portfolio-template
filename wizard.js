@@ -47,7 +47,7 @@
         [...card.querySelectorAll("[data-field]")].map(input => [input.dataset.field, input.value.trim()])
       )).filter(work => Object.values(work).some(Boolean)),
       links: [
-        ["GitHub", data.get("github")], ["YouTube", data.get("youtube")], ["作品サイト・SNS", data.get("social")]
+        ["GitHub", data.get("github")], ["YouTube", data.get("youtube")], ["Music", data.get("music")], ["作品サイト・SNS", data.get("social")]
       ].map(([label, url]) => ({ label, url: safeUrl(url) })).filter(link => link.url),
       theme: { preset: String(data.get("theme") || "gallery"), accent: String(data.get("accent") || "#0b7285") },
       disclosure: { usesGenerativeAI: data.get("ai") === "on" },
@@ -84,18 +84,20 @@
     const usesRsl = data.rsl?.policy !== "none";
     const rsl = usesRsl ? "このサイトはRSLにより、コンテンツのAI学習への無料利用を許可しています。" : "";
     const title = data.profile.name || "わたしのポートフォリオ";
+    const backgroundImage = safeUrl(data.works[0]?.image);
     return `<!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} | Portfolio</title><meta name="description" content="${escapeHtml(data.profile.bio || "作品ポートフォリオ")}"><meta name="generator" content="https://github.com/kaitas/github-portfolio-template"><meta name="author" content="https://aicu.ai/">${usesRsl ? '<link rel="rsl" type="application/rsl+xml" href="rsl.xml">' : ""}<style>
 :root{--accent:${escapeHtml(data.theme.accent)};--bg:${theme.bg};--text:${theme.text};--panel:${theme.panel};--muted:${theme.muted};--label:${theme.label}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:${theme.font};font-size:16px;line-height:1.65;overflow-wrap:anywhere}
+body{margin:0;background:var(--bg);color:var(--text);font-family:${theme.font};font-size:16px;line-height:1.65;overflow-wrap:anywhere;opacity:.25;animation:reveal .5s ease-out forwards}body::before{content:"";position:fixed;z-index:-2;inset:0;background:${backgroundImage ? `linear-gradient(color-mix(in srgb,var(--bg) 68%,transparent),color-mix(in srgb,var(--bg) 82%,transparent)),url("${escapeHtml(backgroundImage)}") center/cover no-repeat` : "var(--bg)"}}body::after{content:"";position:fixed;z-index:-1;inset:0;background:radial-gradient(circle at center,transparent 0 20%,var(--bg) 78%)}#particles{position:fixed;z-index:-1;inset:0;width:100%;height:100%;pointer-events:none}
+@keyframes reveal{to{opacity:1}}
 a{color:inherit}.skip{position:fixed;z-index:10;top:.5rem;left:.5rem;padding:.7rem 1rem;background:var(--text);color:var(--bg);transform:translateY(-150%)}.skip:focus{transform:none}
 a:focus-visible{outline:3px solid var(--label);outline-offset:3px;border-radius:2px}
 .hero,main{width:min(1120px,100%);margin:auto;padding-inline:clamp(1rem,4vw,2rem)}
 .hero{padding-top:clamp(2.5rem,7vh,4.5rem);padding-bottom:clamp(1.75rem,4vh,3rem);border-bottom:1px solid color-mix(in srgb,var(--text) 22%,transparent)}
 .eyebrow,.meta{color:var(--label);font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-.hero h1{max-width:12ch;margin:.3rem 0 1rem;font-size:clamp(2.75rem,7vw,6rem);line-height:1;letter-spacing:-.045em}
+.hero h1{max-width:16ch;margin:.3rem 0 .75rem;font-size:clamp(2.5rem,5vw,4.75rem);line-height:1.05;letter-spacing:-.04em}
 .role{margin:.5rem 0;font-weight:750}.bio{max-width:65ch;margin-block:.75rem;font-size:clamp(1rem,1.3vw,1.1rem)}
 .links{display:flex;flex-wrap:wrap;gap:.4rem .8rem;margin-top:1rem}.links a{display:inline-flex;align-items:center;min-height:44px;border-bottom:2px solid var(--accent);font-weight:650;text-decoration:none}
 main{padding-top:clamp(1.5rem,3vh,2.5rem);padding-bottom:clamp(2.5rem,6vh,5rem)}
@@ -105,10 +107,12 @@ h2{margin:0 0 1rem;font-size:1rem;letter-spacing:.1em}.works{display:grid;gap:2r
 .placeholder{display:grid;place-items:center;color:var(--label);background:color-mix(in srgb,var(--accent) 12%,var(--panel));letter-spacing:.2em}
 .copy{align-self:center;padding:clamp(1.25rem,3vw,2rem)}.copy h3{margin:.25rem 0;font-size:clamp(1.4rem,2.2vw,1.8rem);line-height:1.2}.copy p{margin:.75rem 0}.tools{color:var(--muted);font-size:.9rem}.empty{padding:3rem;background:var(--panel)}
 footer{padding:1.25rem;line-height:1.5;text-align:center;border-top:1px solid color-mix(in srgb,var(--text) 22%,transparent);color:var(--muted);font-size:.8125rem}footer p{margin:.35rem}footer a{text-decoration-thickness:2px;text-underline-offset:3px}
-@media(min-width:1100px) and (min-height:800px){.hero{padding-top:3rem;padding-bottom:2rem}.hero h1{font-size:clamp(4rem,6vw,5.75rem)}main{padding-top:1.75rem;padding-bottom:2rem}.work img,.placeholder{max-height:400px}footer{padding:.8rem}}
-@media(max-width:700px){.hero{padding-top:2.5rem}.hero h1{font-size:clamp(2.5rem,15vw,4.5rem)}.work{grid-template-columns:1fr}.work img,.placeholder{max-height:none;aspect-ratio:4/3}.copy{padding:1.25rem}.links{gap:.25rem .7rem}footer{text-align:left}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style></head><body><a class="skip" href="#works">作品へ移動</a><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main id="works"><h2>SELECTED WORKS</h2><section class="works" aria-label="作品一覧">${works}</section></main><footer><p>${escapeHtml(title)}</p>${ai ? `<p>${ai}</p>` : ""}${rsl ? `<p>${rsl} <a href="rsl.xml">条件を確認</a></p>` : ""}</footer></body></html>`;
+@media(min-width:1100px) and (min-height:800px){.hero{padding-top:2rem;padding-bottom:1.25rem}main{padding-top:1.25rem;padding-bottom:1.25rem}.work img,.placeholder{max-height:390px}footer{padding:.65rem}}
+@media(max-width:700px){.hero{padding-top:2rem;padding-bottom:1.5rem}.hero h1{font-size:clamp(2.35rem,12vw,3.75rem)}.work{grid-template-columns:1fr}.work img,.placeholder{max-height:none;aspect-ratio:4/3}.copy{padding:1.25rem}.links{gap:.25rem .7rem}footer{text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}body{opacity:1;animation:none}#particles{display:none}}
+</style></head><body><canvas id="particles" aria-hidden="true"></canvas><a class="skip" href="#works">作品へ移動</a><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main id="works"><h2>SELECTED WORKS</h2><section class="works" aria-label="作品一覧">${works}</section></main><footer>${ai ? `<p>${ai}</p>` : ""}${rsl ? `<p>${rsl} <a href="rsl.xml">条件を確認</a></p>` : ""}</footer><script>
+if(!matchMedia("(prefers-reduced-motion: reduce)").matches){const c=document.querySelector("#particles"),x=c.getContext("2d"),d=Math.min(devicePixelRatio,2),n=innerWidth<700?350:1000,p=Array.from({length:n},()=>{const a=Math.random()*Math.PI*2,s=.15+Math.random()*.85;return{a,r:Math.random()*24,s,z:.3+Math.random()*1.4}});function size(){c.width=innerWidth*d;c.height=innerHeight*d;x.setTransform(d,0,0,d,0,0)}function draw(){x.clearRect(0,0,innerWidth,innerHeight);x.fillStyle="${theme.label}66";for(const q of p){q.r+=q.s;if(q.r>Math.hypot(innerWidth,innerHeight)*.56)q.r=0;const px=innerWidth/2+Math.cos(q.a)*q.r,py=innerHeight/2+Math.sin(q.a)*q.r;x.fillRect(px,py,q.z,q.z)}requestAnimationFrame(draw)}addEventListener("resize",size,{passive:true});size();draw()}
+</script></body></html>`;
   };
 
   const render = () => {
@@ -167,6 +171,7 @@ footer{padding:1.25rem;line-height:1.5;text-align:center;border-top:1px solid co
     ["interests", "strengths"].forEach(group => document.querySelectorAll(`[data-group="${group}"] input`).forEach(input => input.checked = (config.profile[group] || []).includes(input.value)));
     fields.github.value = config.links?.find(link => link.label === "GitHub")?.url || "";
     fields.youtube.value = config.links?.find(link => link.label === "YouTube")?.url || "";
+    fields.music.value = config.links?.find(link => link.label === "Music")?.url || "";
     fields.social.value = config.links?.find(link => link.label === "作品サイト・SNS")?.url || "";
     fields.theme.value = config.theme?.preset || "gallery";
     fields.accent.value = config.theme?.accent || "#0b7285";
