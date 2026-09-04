@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ポートフォリオ作成ウィザード</title>
+<meta name="description" content="質問に答えてポートフォリオを作成するウィザード">
+<style>
+  :root { --ink: #17202a; --paper: #f3f0e8; --panel: #fffdf7; --accent: #b44527; --line: #d8d1c2; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif; line-height: 1.7; }
+  button, input, select, textarea { font: inherit; }
+  button, .button { border: 0; border-radius: 999px; padding: .7rem 1.1rem; color: white; background: var(--ink); cursor: pointer; text-decoration: none; }
+  button.secondary, .button.secondary { color: var(--ink); background: transparent; border: 1px solid var(--line); }
+  button.accent { background: var(--accent); }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #efb866; outline-offset: 2px; }
+  header { max-width: 1180px; margin: auto; padding: 2rem 1.2rem 1rem; }
+  header p { max-width: 65ch; margin: .5rem 0; }
+  h1 { margin: 0; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.1; }
+  .privacy { padding: .7rem 1rem; border-left: 4px solid var(--accent); background: #fff6dd; }
+  .layout { display: grid; grid-template-columns: minmax(0, 560px) minmax(360px, 1fr); gap: 1.2rem; max-width: 1180px; margin: auto; padding: 1rem 1.2rem 4rem; }
+  .editor, .preview-shell { border: 1px solid var(--line); background: var(--panel); box-shadow: 0 10px 30px #392f2012; }
+  .editor { padding: clamp(1rem, 3vw, 2rem); }
+  .progress { display: flex; gap: .4rem; margin-bottom: 1.4rem; }
+  .progress span { height: 5px; flex: 1; background: var(--line); }
+  .progress span.current { background: var(--accent); }
+  fieldset { border: 0; padding: 0; margin: 0; }
+  legend { font-family: Georgia, "Yu Mincho", serif; font-size: 1.55rem; font-weight: 700; margin-bottom: .4rem; }
+  .hint { color: #625d52; font-size: .88rem; margin: 0 0 1.2rem; }
+  label { display: block; font-weight: 700; margin-top: 1rem; }
+  input, select, textarea { width: 100%; margin-top: .35rem; padding: .72rem; border: 1px solid #aaa397; border-radius: 6px; color: var(--ink); background: white; }
+  textarea { min-height: 7rem; resize: vertical; }
+  input[type="color"] { width: 5rem; height: 3rem; padding: .2rem; }
+  .checks { display: grid; grid-template-columns: repeat(2, 1fr); gap: .35rem .8rem; }
+  .checks label { display: flex; align-items: center; gap: .45rem; margin-top: .4rem; font-weight: 400; }
+  .checks input { width: auto; margin: 0; }
+  .work-card { margin: 1rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 8px; background: white; }
+  .work-card h3 { margin: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: space-between; margin-top: 1.5rem; }
+  .actions div { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .warning { color: #821d14; background: #fff0ed; border-left: 4px solid #b52b1e; padding: .7rem 1rem; margin-top: 1rem; }
+  .preview-shell { position: sticky; top: 1rem; align-self: start; overflow: hidden; }
+  .preview-label { margin: 0; padding: .5rem 1rem; color: white; background: var(--ink); font-size: .8rem; letter-spacing: .08em; }
+  iframe { display: block; width: 100%; height: 720px; border: 0; background: white; }
+  .output { display: grid; gap: .7rem; margin-top: 1rem; }
+  .output button { width: 100%; }
+  [hidden] { display: none !important; }
+  @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } .preview-shell { position: static; } iframe { height: 600px; } }
+  @media (max-width: 520px) { .checks { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <p>PORTFOLIO STARTER</p>
+  <h1>あなたの「つくる」を、<br>最初の一枚に。</h1>
+  <p>質問に答えるだけで、GitHub Pagesに置けるポートフォリオを作ります。入力内容は外部へ送信しません。</p>
+  <p class="privacy"><strong>個人情報を入れないでください。</strong> 本名、学籍番号、住所、電話番号、学校のメールアドレスは不要です。活動名と公開用SNSを使いましょう。</p>
+</header>
+
+<main class="layout">
+  <form class="editor" id="wizard">
+    <div class="progress" id="progress" aria-label="進み具合"></div>
+
+    <fieldset data-step="0">
+      <legend>1. どう名乗りますか？</legend>
+      <p class="hint">本名でなく、活動名・ハンドルネーム・イニシャルで構いません。</p>
+      <label>表示名 <input name="name" required maxlength="40" placeholder="例: Aki / ao studio"></label>
+      <label>肩書き
+        <select name="role">
+          <option>デジタルコンテンツを学ぶ学生</option><option>映像クリエイター</option><option>3DCGアーティスト</option>
+          <option>ゲームクリエイター</option><option>イラストレーター</option><option>Webクリエイター</option><option>サウンドクリエイター</option>
+        </select>
+      </label>
+    </fieldset>
+
+    <fieldset data-step="1" hidden>
+      <legend>2. 何をつくる人ですか？</legend>
+      <p class="hint">選んだ内容から自己紹介の下書きを自動で作ります。</p>
+      <label>興味のある分野（複数可）</label>
+      <div class="checks" data-group="interests">
+        <label><input type="checkbox" value="映像">映像</label><label><input type="checkbox" value="3DCG">3DCG</label>
+        <label><input type="checkbox" value="ゲーム">ゲーム</label><label><input type="checkbox" value="イラスト">イラスト</label>
+        <label><input type="checkbox" value="写真">写真</label><label><input type="checkbox" value="Web">Web</label>
+        <label><input type="checkbox" value="XR">XR</label><label><input type="checkbox" value="生成AI">生成AI</label>
+        <label><input type="checkbox" value="音楽・サウンド">音楽・サウンド</label><label><input type="checkbox" value="インタラクティブアート">インタラクティブアート</label>
+      </div>
+      <label>得意・好きな工程（複数可）</label>
+      <div class="checks" data-group="strengths">
+        <label><input type="checkbox" value="企画">企画</label><label><input type="checkbox" value="撮影">撮影</label>
+        <label><input type="checkbox" value="編集">編集</label><label><input type="checkbox" value="デザイン">デザイン</label>
+        <label><input type="checkbox" value="モデリング">モデリング</label><label><input type="checkbox" value="アニメーション">アニメーション</label>
+        <label><input type="checkbox" value="プログラミング">プログラミング</label><label><input type="checkbox" value="演出">演出</label>
+      </div>
+      <label>将来やってみたいこと <input name="future" maxlength="100" placeholder="例: ゲームの世界観を伝える映像演出"></label>
+      <label>自己紹介 <textarea name="bio" maxlength="280" placeholder="選択内容から自動で下書きします。自由に直せます。"></textarea></label>
+    </fieldset>
+
+    <fieldset data-step="2" hidden>
+      <legend>3. 作品を見せましょう</legend>
+      <p class="hint">画像は先にGitHubのimagesフォルダへアップロードし、画像パスを入力します。HTTPSの画像URLも使えます。</p>
+      <div id="works"></div>
+      <button type="button" class="secondary" id="add-work">作品を追加</button>
+    </fieldset>
+
+    <fieldset data-step="3" hidden>
+      <legend>4. 公開用リンク</legend>
+      <p class="hint">空欄で構いません。個人用ではなく、作品を見せるための公開アカウントを推奨します。</p>
+      <label>GitHub <input name="github" type="url" placeholder="https://github.com/..."></label>
+      <label>YouTube <input name="youtube" type="url" placeholder="https://www.youtube.com/@..."></label>
+      <label>その他のSNS・作品サイト <input name="social" type="url" placeholder="https://..."></label>
+    </fieldset>
+
+    <fieldset data-step="4" hidden>
+      <legend>5. 見た目を選ぶ</legend>
+      <label>スタイル
+        <select name="theme"><option value="gallery">Gallery / 明るく静か</option><option value="night">Night / 暗く鮮やか</option><option value="paper">Paper / 編集ノート</option></select>
+      </label>
+      <label>アクセント色 <input name="accent" type="color" value="#0b7285"></label>
+    </fieldset>
+
+    <fieldset data-step="5" hidden>
+      <legend>6. 確認して保存</legend>
+      <p class="hint">設定JSONは編集の再開用です。完成HTMLはGitHubのindex.htmlと置き換えると公開できます。</p>
+      <label><input name="ai" type="checkbox" checked> 作品に生成AIを使用したことを表示する</label>
+      <div id="pii-warning" class="warning" hidden></div>
+      <div class="output">
+        <button type="button" class="accent" id="download-html">完成した index.html を保存</button>
+        <button type="button" id="download-json">編集用 portfolio.json を保存</button>
+        <label class="button secondary" for="load-json">portfolio.json を読み込んで再編集</label>
+        <input id="load-json" type="file" accept="application/json,.json" hidden>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="button" class="secondary" id="back" hidden>戻る</button>
+      <div><a class="button secondary" href="index.html">今のサイトを見る</a><button type="button" class="accent" id="next">次へ</button></div>
+    </div>
+  </form>
+
+  <aside class="preview-shell">
+    <p class="preview-label">LIVE PREVIEW</p>
+    <iframe id="preview" title="完成イメージ"></iframe>
+  </aside>
+</main>
+
+<template id="work-template">
+  <section class="work-card">
+    <h3>作品 <span></span></h3>
+    <label>タイトル <input data-field="title" maxlength="80" placeholder="例: 夜の図書館"></label>
+    <label>画像パスまたはHTTPS URL <input data-field="image" placeholder="images/work-01.png"></label>
+    <label>画像の説明 <input data-field="alt" maxlength="120" placeholder="画面に写っているものを短く説明"></label>
+    <label>制作年 <input data-field="year" maxlength="10" inputmode="numeric" placeholder="2026"></label>
+    <label>担当・使用ツール <input data-field="tools" maxlength="120" placeholder="企画・編集 / Blender, After Effects"></label>
+    <label>作品の説明 <textarea data-field="description" maxlength="400" placeholder="何を表現し、何を工夫したか"></textarea></label>
+    <button type="button" class="secondary remove-work">この作品を削除</button>
+  </section>
+</template>
+
+<script src="wizard.js"></script>
+</body>
+</html>
