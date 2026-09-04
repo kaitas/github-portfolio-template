@@ -70,9 +70,9 @@
 
   const portfolioHtml = data => {
     const themes = {
-      gallery: { bg: "#ffffff", text: "#17202a", panel: "#f4f5f3", font: 'system-ui, "Noto Sans JP", sans-serif' },
-      night: { bg: "#11131a", text: "#f4f0e8", panel: "#1c202b", font: 'system-ui, "Noto Sans JP", sans-serif' },
-      paper: { bg: "#f1ecdf", text: "#2c2924", panel: "#fffaf0", font: 'Georgia, "Yu Mincho", serif' }
+      gallery: { bg: "#ffffff", text: "#17202a", panel: "#f4f5f3", muted: "#475569", label: "#075985", font: 'system-ui, "Noto Sans JP", sans-serif' },
+      night: { bg: "#11131a", text: "#f4f0e8", panel: "#1c202b", muted: "#cbd5e1", label: "#67e8f9", font: 'system-ui, "Noto Sans JP", sans-serif' },
+      paper: { bg: "#f1ecdf", text: "#2c2924", panel: "#fffaf0", muted: "#57534e", label: "#9a3412", font: 'Georgia, "Yu Mincho", serif' }
     };
     const theme = themes[data.theme.preset] || themes.gallery;
     const works = data.works.map(work => {
@@ -86,8 +86,29 @@
     const title = data.profile.name || "わたしのポートフォリオ";
     return `<!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} | Portfolio</title><meta name="description" content="${escapeHtml(data.profile.bio || "作品ポートフォリオ")}"><meta name="generator" content="https://github.com/kaitas/github-portfolio-template"><meta name="author" content="https://aicu.ai/">${usesRsl ? '<link rel="rsl" type="application/rsl+xml" href="rsl.xml">' : ""}<style>
-:root{--accent:${escapeHtml(data.theme.accent)};--bg:${theme.bg};--text:${theme.text};--panel:${theme.panel}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:${theme.font};line-height:1.75}a{color:inherit}.hero,main{max-width:980px;margin:auto;padding-left:1.3rem;padding-right:1.3rem}.hero{padding-top:7rem;padding-bottom:4rem;border-bottom:1px solid color-mix(in srgb,var(--text) 18%,transparent)}.eyebrow,.meta{color:var(--accent);font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(2.8rem,9vw,7rem);line-height:.95;letter-spacing:-.05em;margin:.4rem 0 1.4rem}.role{font-weight:700}.bio{max-width:65ch;font-size:1.08rem}.links{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.5rem}.links a{border-bottom:2px solid var(--accent);text-decoration:none}main{padding-top:3rem;padding-bottom:6rem}h2{font-size:1rem;letter-spacing:.1em}.works{display:grid;gap:2rem}.work{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);background:var(--panel)}.work img,.placeholder{width:100%;height:100%;min-height:340px;object-fit:cover}.placeholder{display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel));letter-spacing:.2em}.copy{padding:clamp(1.2rem,4vw,2.4rem)}.copy h3{font-size:1.6rem;line-height:1.25;margin:.25rem 0}.tools{font-size:.82rem;opacity:.75}.empty{padding:3rem;background:var(--panel)}footer{padding:2rem 1.3rem;text-align:center;border-top:1px solid color-mix(in srgb,var(--text) 18%,transparent);font-size:.78rem;opacity:.75}@media(max-width:700px){.hero{padding-top:4rem}.work{grid-template-columns:1fr}.work img,.placeholder{min-height:230px;max-height:430px}}
-</style></head><body><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main><h2>SELECTED WORKS</h2><section class="works">${works}</section></main><footer><p>${escapeHtml(title)}</p>${ai ? `<p>${ai}</p>` : ""}${rsl ? `<p>${rsl} <a href="rsl.xml">条件を確認</a></p>` : ""}</footer></body></html>`;
+:root{--accent:${escapeHtml(data.theme.accent)};--bg:${theme.bg};--text:${theme.text};--panel:${theme.panel};--muted:${theme.muted};--label:${theme.label}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:${theme.font};font-size:16px;line-height:1.65;overflow-wrap:anywhere}
+a{color:inherit}.skip{position:fixed;z-index:10;top:.5rem;left:.5rem;padding:.7rem 1rem;background:var(--text);color:var(--bg);transform:translateY(-150%)}.skip:focus{transform:none}
+a:focus-visible{outline:3px solid var(--label);outline-offset:3px;border-radius:2px}
+.hero,main{width:min(1120px,100%);margin:auto;padding-inline:clamp(1rem,4vw,2rem)}
+.hero{padding-top:clamp(2.5rem,7vh,4.5rem);padding-bottom:clamp(1.75rem,4vh,3rem);border-bottom:1px solid color-mix(in srgb,var(--text) 22%,transparent)}
+.eyebrow,.meta{color:var(--label);font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.hero h1{max-width:12ch;margin:.3rem 0 1rem;font-size:clamp(2.75rem,7vw,6rem);line-height:1;letter-spacing:-.045em}
+.role{margin:.5rem 0;font-weight:750}.bio{max-width:65ch;margin-block:.75rem;font-size:clamp(1rem,1.3vw,1.1rem)}
+.links{display:flex;flex-wrap:wrap;gap:.4rem .8rem;margin-top:1rem}.links a{display:inline-flex;align-items:center;min-height:44px;border-bottom:2px solid var(--accent);font-weight:650;text-decoration:none}
+main{padding-top:clamp(1.5rem,3vh,2.5rem);padding-bottom:clamp(2.5rem,6vh,5rem)}
+h2{margin:0 0 1rem;font-size:1rem;letter-spacing:.1em}.works{display:grid;gap:2rem}
+.work{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(260px,.65fr);min-height:0;background:var(--panel);border-top:4px solid var(--accent)}
+.work img,.placeholder{display:block;width:100%;height:100%;min-height:0;max-height:480px;aspect-ratio:16/9;object-fit:cover}
+.placeholder{display:grid;place-items:center;color:var(--label);background:color-mix(in srgb,var(--accent) 12%,var(--panel));letter-spacing:.2em}
+.copy{align-self:center;padding:clamp(1.25rem,3vw,2rem)}.copy h3{margin:.25rem 0;font-size:clamp(1.4rem,2.2vw,1.8rem);line-height:1.2}.copy p{margin:.75rem 0}.tools{color:var(--muted);font-size:.9rem}.empty{padding:3rem;background:var(--panel)}
+footer{padding:1.25rem;line-height:1.5;text-align:center;border-top:1px solid color-mix(in srgb,var(--text) 22%,transparent);color:var(--muted);font-size:.8125rem}footer p{margin:.35rem}footer a{text-decoration-thickness:2px;text-underline-offset:3px}
+@media(min-width:1100px) and (min-height:800px){.hero{padding-top:3rem;padding-bottom:2rem}.hero h1{font-size:clamp(4rem,6vw,5.75rem)}main{padding-top:1.75rem;padding-bottom:2rem}.work img,.placeholder{max-height:400px}footer{padding:.8rem}}
+@media(max-width:700px){.hero{padding-top:2.5rem}.hero h1{font-size:clamp(2.5rem,15vw,4.5rem)}.work{grid-template-columns:1fr}.work img,.placeholder{max-height:none;aspect-ratio:4/3}.copy{padding:1.25rem}.links{gap:.25rem .7rem}footer{text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head><body><a class="skip" href="#works">作品へ移動</a><header class="hero"><p class="eyebrow">Portfolio</p><h1>${escapeHtml(title)}</h1><p class="role">${escapeHtml(data.profile.role)}</p><p class="bio">${escapeHtml(data.profile.bio || "興味や得意なことを選ぶと、自己紹介が作られます。")}</p>${links ? `<nav class="links" aria-label="外部リンク">${links}</nav>` : ""}</header><main id="works"><h2>SELECTED WORKS</h2><section class="works" aria-label="作品一覧">${works}</section></main><footer><p>${escapeHtml(title)}</p>${ai ? `<p>${ai}</p>` : ""}${rsl ? `<p>${rsl} <a href="rsl.xml">条件を確認</a></p>` : ""}</footer></body></html>`;
   };
 
   const render = () => {
